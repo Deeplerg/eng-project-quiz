@@ -24,7 +24,7 @@ steps:
       - TAG=$BRANCH-$COMMIT
       - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
 
-      - /kaniko/executor --destination "$FULL_IMAGE_NAME" --context "." --dockerfile "/deploy/Dockerfile.QuizApp" --registry-certificate "$REGISTRY=/tls.crt" --cache "true" --cache-repo "$REGISTRY/quizapp/cache" --cache-copy-layers "true" --cache-run-layers "true"
+      - /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --registry-certificate="$REGISTRY=/tls.crt" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
 
 trigger:
   branch:
