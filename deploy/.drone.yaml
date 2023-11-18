@@ -4,13 +4,17 @@ type: kubernetes
 name: wip-cicd
 
 steps:
-  - name: hello-world
-    image: alpine
+  - name: build-push
+    image: docker
     environment:
       USERNAME:
-        from_secret: docker_username
+        from_secret: registry_username
+      PASSWORD:
+        from_secret: registry_password
+      REGISTRY:
+        from_secret: registry_address 
     commands:
-      - echo ${#USERNAME}
+      - docker login -u $USERNAME -p $PASSWORD $REGISTRY
 
 trigger:
   branch:
@@ -18,10 +22,3 @@ trigger:
   events:
     - push
     - rollback
-  
----
-kind: secret
-name: docker_username
-get:
-  path: drone-registry-user-password-secret
-  name: user
