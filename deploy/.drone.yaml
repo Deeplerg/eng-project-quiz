@@ -12,8 +12,11 @@ steps:
       PASSWORD:
         from_secret: registry_password
       REGISTRY:
-        from_secret: registry_address 
+        from_secret: registry_address
+      CA_CERT:
+        from_secret: registry_ca_cert
     commands:
+      - echo $CA_CERT > /usr/share/local/ca-certificates/docker-registry.crt
       - docker login -u $USERNAME -p $PASSWORD $REGISTRY
 
 trigger:
