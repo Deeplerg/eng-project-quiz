@@ -6,8 +6,11 @@ name: wip-cicd
 steps:
   - name: hello-world
     image: alpine
+    environment:
+      USERNAME:
+        from_secret: docker_username
     commands:
-      - echo "Hello World"
+      - echo $USERNAME
 
 trigger:
   branch:
@@ -15,3 +18,10 @@ trigger:
   events:
     - push
     - rollback
+  
+---
+kind: secret
+name: docker_username
+get:
+  path: drone-registry-user-password-secret
+  name: user
