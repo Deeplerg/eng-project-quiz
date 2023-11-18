@@ -16,8 +16,8 @@ steps:
       CA_CERT:
         from_secret: registry_ca_cert
     commands:
-      - mkdir -p /usr/share/local/ca-certificates/
-      - echo $CA_CERT > /usr/share/local/ca-certificates/docker-registry.crt
+      - mkdir -p /usr/local/share/ca-certificates/
+      - echo $CA_CERT > /usr/local/share/ca-certificates/docker-registry.crt
       - update-ca-certificates
       - docker login -u $USERNAME -p $PASSWORD $REGISTRY
 
