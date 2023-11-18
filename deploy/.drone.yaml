@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: kubernetes
-name: wip-cicd
+name: wip-cicd-pipeline
 
 steps:
   - name: hello-world
@@ -18,7 +18,7 @@ trigger:
 
 ---
 kind: policy
-name: wip-cicd
+name: wip-cicd-policy
 
 match:
   repo:
