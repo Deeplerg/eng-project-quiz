@@ -16,9 +16,7 @@ steps:
       CA_CERT:
         from_secret: registry_ca_cert
     commands:
-      - printf '%b\n' "$CA_CERT" > "/tls.crt"
-      - |
-        echo FILE: "$(cat /tls.crt)" END
+      - printf '%b\n' "$CA_CERT" > "/kaniko/ssl/certs/additional-ca-cert-bundle.crt"
       
       - COMMIT=${DRONE_COMMIT_SHA:0:8}
       - RAW_BRANCH=${DRONE_BRANCH}
@@ -32,7 +30,7 @@ steps:
         JSON="{ \"auths\": { \"$REGISTRY\": { \"auth\": \"$AUTH\" } } }"
       - echo $JSON > "/kaniko/.docker/config.json"
 
-      - /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --registry-certificate="$REGISTRY=/tls.crt" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
+      - /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
 
 trigger:
   branch:
