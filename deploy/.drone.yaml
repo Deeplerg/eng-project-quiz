@@ -18,6 +18,11 @@ steps:
     commands:
       - printf '%b\n' "$CA_CERT" >> "/etc/ssl/certs/ca-certificates.crt"
       - docker login -u $USERNAME -p $PASSWORD $REGISTRY
+      - echo DRONE_COMMIT: ${DRONE_COMMIT}
+      - echo DRONE_COMMIT_SHA: ${DRONE_COMMIT_SHA}
+      - echo DRONE_COMMIT_SHA:0:8: ${DRONE_COMMIT_SHA:0:8}
+      - echo DRONE_BRANCH: ${DRONE_BRANCH}
+      - echo DRONE_BRANCH/\//-: ${DRONE_BRANCH/\//-}
 
 trigger:
   branch:
