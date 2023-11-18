@@ -5,7 +5,7 @@ name: wip-cicd
 
 steps:
   - name: build-push
-    image: docker
+    image: gcr.io/kaniko-project/executor:debug
     environment:
       USERNAME:
         from_secret: registry_username
@@ -16,18 +16,15 @@ steps:
       CA_CERT:
         from_secret: registry_ca_cert
     commands:
-      - printf '%b\n' "$CA_CERT" >> "/etc/ssl/certs/ca-certificates.crt"
-      
-      - docker login -u $USERNAME -p $PASSWORD $REGISTRY
+      - printf '%b\n' "$CA_CERT" > "/tls.crt"
       
       - COMMIT=${DRONE_COMMIT_SHA:0:8}
       - RAW_BRANCH=${DRONE_BRANCH}
       - BRANCH=$(echo $RAW_BRANCH | sed 's/[^a-zA-Z0-9]/-/g')
       - TAG=$BRANCH-$COMMIT
       - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
-      
-      - docker build . -t $FULL_IMAGE_NAME -f deploy/Dockerfile.QuizApp
-      - docker push $FULL_IMAGE_NAME
+
+      - /kaniko/executor --destination "$FULL_IMAGE_NAME" --context "." --dockerfile "/deploy/Dockerfile.QuizApp" --registry-certificate "$REGISTRY=/tls.crt" --cache "true" --cache-repo "$REGISTRY/quizapp/cache" --cache-copy-layers "true" --cache-run-layers "true"
 
 trigger:
   branch:
