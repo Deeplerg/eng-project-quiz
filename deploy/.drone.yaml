@@ -18,6 +18,7 @@ steps:
     commands:
       - mkdir -p /usr/share/local/ca-certificates/
       - echo $CA_CERT > /usr/share/local/ca-certificates/docker-registry.crt
+      - update-ca-certificates
       - docker login -u $USERNAME -p $PASSWORD $REGISTRY
 
 trigger:
