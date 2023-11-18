@@ -17,6 +17,8 @@ steps:
         from_secret: registry_ca_cert
     commands:
       - printf '%b\n' "$CA_CERT" > "/tls.crt"
+      - |
+        echo FILE: "$(cat /tls.crt)" END
       
       - COMMIT=${DRONE_COMMIT_SHA:0:8}
       - RAW_BRANCH=${DRONE_BRANCH}
