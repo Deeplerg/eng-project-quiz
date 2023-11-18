@@ -10,7 +10,7 @@ steps:
       USERNAME:
         from_secret: docker_username
     commands:
-      - echo ${USERNAME:3:2}
+      - echo ${#USERNAME}
 
 trigger:
   branch:
