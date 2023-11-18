@@ -23,6 +23,12 @@ steps:
       - BRANCH=$(echo $RAW_BRANCH | sed 's/[^a-zA-Z0-9]/-/g')
       - TAG=$BRANCH-$COMMIT
       - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
+        
+      - AUTH=$(echo -n $USERNAME:$PASSWORD | base64)
+      
+      - |
+        JSON="{ \"auths\": { \"$REGISTRY\": { \"auth\": \"$AUTH\" } } }"
+      - echo $JSON > "/kaniko/.docker/config.json"
 
       - /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --registry-certificate="$REGISTRY=/tls.crt" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
 
