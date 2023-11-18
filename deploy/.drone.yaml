@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: kubernetes
-name: wip-cicd-pipeline
+name: wip-cicd
 
 steps:
   - name: hello-world
@@ -15,14 +15,3 @@ trigger:
   events:
     - push
     - rollback
-
----
-kind: policy
-name: wip-cicd-policy
-
-match:
-  repo:
-    - "eng-project-quiz"
-
-node_selector:
-  heavy: "true"
