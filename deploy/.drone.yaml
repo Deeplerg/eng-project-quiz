@@ -26,7 +26,8 @@ steps:
       - TAG=$BRANCH-$COMMIT
       - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
       
-      - echo $FULL_IMAGE_NAME
+      - docker build . -t $FULL_IMAGE_NAME -f deploy/Dockerfile.QuizApp
+      - docker push $FULL_IMAGE_NAME
 
 trigger:
   branch:
