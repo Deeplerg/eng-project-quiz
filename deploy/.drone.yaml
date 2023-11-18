@@ -16,8 +16,7 @@ steps:
       CA_CERT:
         from_secret: registry_ca_cert
     commands:
-      - echo $CA_CERT >> "/etc/ssl/certs/ca-certificates.crt"
-      - update-ca-certificates
+      - printf '%b\n' $CA_CERT >> "/etc/ssl/certs/ca-certificates.crt"
       - docker login -u $USERNAME -p $PASSWORD $REGISTRY
 
 trigger:
