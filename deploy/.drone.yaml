@@ -1,0 +1,17 @@
+---
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+  - name: hello-world
+    image: alpine
+    commands:
+      - echo "Hello World"
+
+trigger:
+  branch:
+    - wip-cicd
+  events:
+    - push
+    - rollback
