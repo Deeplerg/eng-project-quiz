@@ -18,7 +18,7 @@ trigger:
 
 ---
 kind: policy
-name: default
+name: wip-cicd
 
 match:
   repo:
