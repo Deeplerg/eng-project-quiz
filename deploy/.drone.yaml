@@ -17,17 +17,16 @@ steps:
         from_secret: registry_ca_cert
     commands:
       - printf '%b\n' "$CA_CERT" >> "/etc/ssl/certs/ca-certificates.crt"
+      
       - docker login -u $USERNAME -p $PASSWORD $REGISTRY
-      - TAG=${DRONE_COMMIT}
-      - echo $TAG
-      - TAG=${DRONE_COMMIT_SHA}
-      - echo $TAG
-      - TAG=${DRONE_COMMIT_SHA:0:8}
-      - echo $TAG
-      - TAG=${DRONE_BRANCH}
-      - echo $TAG
-      - TAG=${DRONE_BRANCH/\//-}
-      - echo $TAG
+      
+      - COMMIT=${DRONE_COMMIT_SHA:0:8}
+      - RAW_BRANCH=${DRONE_BRANCH}
+      - BRANCH=$(echo $RAW_BRANCH | sed 's/[^a-zA-Z0-9]/-/g')
+      - TAG=$BRANCH-$COMMIT
+      - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
+      
+      - echo $FULL_IMAGE_NAME
 
 trigger:
   branch:
