@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: kubernetes
-name: default
+name: wip-cicd
 
 steps:
   - name: hello-world
@@ -15,3 +15,14 @@ trigger:
   events:
     - push
     - rollback
+
+---
+kind: policy
+name: default
+
+match:
+  repo:
+    - "eng-project-quiz"
+
+node_selector:
+  heavy: "true"
