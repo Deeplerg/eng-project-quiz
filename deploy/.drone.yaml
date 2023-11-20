@@ -39,7 +39,7 @@ steps:
       - git clone https://github.com/Deeplerg/eng-project-quiz-infra
   
   - name: edit-kustomization
-    image: registry.k8s.io/kustomize/kustomize
+    image: registry.k8s.io/kustomize/kustomize:v5.0.0
     environment:
       CERT_MANAGER_ISSUER:
         from_secret: kustomize_wip-cicd_cert_manager_issuer
