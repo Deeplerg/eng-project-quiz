@@ -33,18 +33,41 @@ steps:
 
       - /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
 
-  - name: clone-test
+  - name: clone-infrastructure
     image: alpine/git
     commands:
-      - ls
       - git clone https://github.com/Deeplerg/eng-project-quiz-infra
-      - ls
-      - ls eng-project-quiz-infra
-        
-  - name: see-if-changes-persist
-    image: alpine
+  
+  - name: edit-kustomization
+    image: registry.k8s.io/kustomize/kustomize
+    environment:
+      CERT_MANAGER_ISSUER:
+        from_secret: kustomize_wip-cicd_cert_manager_issuer
+      INGRESS_CLASS_NAME:
+        from_secret: kustomize_wip-cicd_ingress_class_name
+      INGRESS_TLS_HOST:
+        from_secret: kustomize_wip-cicd_ingress_tls_host
+      INGRESS_TLS_SECRETNAME:
+        from_secret: kustomize_wip-cicd_ingress_tls_secretname
+      INGRESS_HOST:
+        from_secret: kustomize_wip-cicd_ingress_host
     commands:
-      - ls
+      - cd eng-project-quiz-infra/kustomization/wip-cicd
+      
+      - printf '%b\n' CERT_MANAGER_ISSUER=$CERT_MANAGER_ISSUER > environment-variables.env
+      - printf '%b\n' INGRESS_CLASS_NAME=$INGRESS_CLASS_NAME >> environment-variables.env
+      - printf '%b\n' INGRESS_TLS_HOST=$INGRESS_TLS_HOST >> environment-variables.env
+      - printf '%b\n' INGRESS_TLS_SECRETNAME=$INGRESS_TLS_SECRETNAME >> environment-variables.env
+      - printf '%b\n' INGRESS_HOST=$INGRESS_HOST >> environment-variables.env   
+      
+      - COMMIT=${DRONE_COMMIT_SHA:0:8}
+      - RAW_BRANCH=${DRONE_BRANCH}
+      - BRANCH=$(echo $RAW_BRANCH | sed 's/[^a-zA-Z0-9]/-/g')
+      - TAG=$BRANCH-$COMMIT
+      - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
+
+      - kustomize edit set image quizapp-image-name=$FULL_IMAGE_NAME
+      - kustomize build .
     
 
 trigger:
