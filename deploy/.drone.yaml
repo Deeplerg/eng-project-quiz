@@ -40,6 +40,11 @@ steps:
       - git clone https://github.com/Deeplerg/eng-project-quiz-infra
       - ls
       - ls eng-project-quiz-infra
+        
+  - name: see-if-changes-persist
+    image: alpine
+    commands:
+      - ls
     
 
 trigger:
