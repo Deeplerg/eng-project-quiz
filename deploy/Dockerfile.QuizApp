@@ -2,7 +2,9 @@
 WORKDIR /src
 COPY ["QuizApp/QuizApp.csproj", "QuizApp/"]
 RUN dotnet restore "QuizApp/QuizApp.csproj" --runtime linux-musl-x64
-COPY . .
+
+# COPY ["QuizApp.sln", "."]
+COPY ["QuizApp/", "."]
 RUN dotnet publish "QuizApp/QuizApp.csproj"  \
     -c Release  \
     -o /app/publish  \
