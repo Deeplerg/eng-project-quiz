@@ -59,7 +59,7 @@ steps:
       - git config --global user.email "drone@deeplerg.dev"
       - git config --global user.name "Drone"
       - git add .
-      - git commit -am "Update image tags" --author="Drone drone@deeplerg.dev"
+      - git commit -am "Update image tags" --author="Drone <drone@deeplerg.dev>"
       - git push
 
     
