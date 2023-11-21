@@ -68,6 +68,7 @@ trigger:
     include:
       - promote
       - rollback
+#      - push # Hmmmmm... Do we really have to promote this?
   target:
     - production
 
@@ -89,6 +90,9 @@ trigger:
     - main
   event:
     - pull_request
+    - push # honestly this is only for the cool looking green checks :P
+           # oh wait! also if you want to simply push into prod... 
+           # ... which isn't a good idea.
 
 
 ---
