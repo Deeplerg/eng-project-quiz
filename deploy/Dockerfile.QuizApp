@@ -1,5 +1,4 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
-USER app
 WORKDIR /app
 EXPOSE 8080
 
@@ -20,5 +19,6 @@ RUN dotnet publish "QuizApp/QuizApp.csproj"  \
 
 FROM base AS final
 WORKDIR /app
+USER app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "QuizApp.dll"]
