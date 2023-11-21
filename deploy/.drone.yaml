@@ -54,6 +54,7 @@ steps:
   - name: push-infrastructure-changes
     image: alpine/git
     commands:
+      - cd eng-project-quiz-infra
       - git checkout main
       - git config --global user.email "drone@ci"
       - git config --global user.name "drone"
