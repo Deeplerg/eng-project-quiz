@@ -16,7 +16,7 @@ steps:
       CA_CERT:
         from_secret: registry_ca_cert
     commands:
-      - exit # temporary to speed up pipeline
+      - exit
       - printf '%b\n' "$CA_CERT" > "/kaniko/ssl/certs/additional-ca-cert-bundle.crt"
       
       - COMMIT=${DRONE_COMMIT_SHA:0:8}
