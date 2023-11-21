@@ -1,15 +1,8 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
-WORKDIR /app
-EXPOSE 8080
-
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS restore
+﻿FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS publish
 WORKDIR /src
 COPY ["QuizApp/QuizApp.csproj", "QuizApp/"]
 RUN dotnet restore "QuizApp/QuizApp.csproj" --runtime linux-musl-x64
-
-FROM restore AS publish
-WORKDIR /src
-COPY ["QuizApp/", "QuizApp/"]
+COPY . .
 RUN dotnet publish "QuizApp/QuizApp.csproj"  \
     -c Release  \
     -o /app/publish  \
@@ -17,8 +10,11 @@ RUN dotnet publish "QuizApp/QuizApp.csproj"  \
     --runtime linux-musl-x64 \
     --no-restore
 
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
-USER app
+# dotnet 8 updated the default port: https://learn.microsoft.com/en-us/dotnet/core/compatibility/containers/8.0/aspnet-port
+EXPOSE 8080
 COPY --from=publish /app/publish .
+# non-root user in dotnet 8
+USER app
 ENTRYPOINT ["dotnet", "QuizApp.dll"]
