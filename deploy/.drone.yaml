@@ -1,7 +1,100 @@
 ---
 kind: pipeline
 type: kubernetes
-name: wip-cicd
+name: dev-build-push
+
+steps:
+  - name: build-push
+    image: gcr.io/kaniko-project/executor:debug
+    environment:
+      USERNAME:
+        from_secret: registry_username
+      PASSWORD:
+        from_secret: registry_password
+      REGISTRY:
+        from_secret: registry_address
+      CA_CERT:
+        from_secret: registry_ca_cert
+    commands:
+      - printf '%b\n' "$CA_CERT" > "/kaniko/ssl/certs/additional-ca-cert-bundle.crt"
+
+      - COMMIT=${DRONE_COMMIT_SHA:0:8}
+      - RAW_BRANCH=${DRONE_BRANCH}
+      - BRANCH=$(echo $RAW_BRANCH | sed 's/[^a-zA-Z0-9]/-/g')
+      - TAG=$BRANCH-$COMMIT
+      - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
+
+      - AUTH=$(echo -n $USERNAME:$PASSWORD | base64)
+
+      - |
+        JSON="{ \"auths\": { \"$REGISTRY\": { \"auth\": \"$AUTH\" } } }"
+      - echo $JSON > "/kaniko/.docker/config.json"
+
+      - /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
+
+  - name: clone-infrastructure
+    image: alpine/git
+    commands:
+      - git clone https://github.com/Deeplerg/eng-project-quiz-infra
+
+  - name: edit-kustomization
+    image: registry.k8s.io/kustomize/kustomize:v5.0.0
+    environment:
+      REGISTRY:
+        from_secret: registry_address
+    commands:
+      - COMMIT=${DRONE_COMMIT_SHA:0:8}
+      - RAW_BRANCH=${DRONE_BRANCH}
+      - BRANCH=$(echo $RAW_BRANCH | sed 's/[^a-zA-Z0-9]/-/g')
+      - TAG=$BRANCH-$COMMIT
+      - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
+        
+      - cd eng-project-quiz-infra/kustomization/$BRANCH
+      - kustomize edit set image quizapp-image-name=$FULL_IMAGE_NAME
+
+  - name: push-infrastructure-changes
+    image: alpine/git
+    commands:
+      - cd eng-project-quiz-infra
+      - git checkout main
+      - git config user.email "drone@deeplerg.dev"
+      - git config user.name "Drone"
+      - git add .
+      - git commit -am "Update image tags" --author="Drone <drone@deeplerg.dev>"
+      - git push
+
+
+
+trigger:
+  branch:
+    - dev
+  event:
+    - push
+
+
+
+---
+kind: pipeline
+type: kubernetes
+name: dev-build-only
+
+steps:
+  - name: build
+    image: gcr.io/kaniko-project/executor:debug
+    commands:
+      - /kaniko/executor --no-push --context="." --dockerfile="/deploy/Dockerfile.QuizApp"
+
+trigger:
+  branch:
+    - dev
+  event:
+    - pull_request
+
+
+---
+kind: pipeline
+type: kubernetes
+name: wip-cicd-build-push
 
 steps:
   - name: build-push
@@ -43,16 +136,13 @@ steps:
       REGISTRY:
         from_secret: registry_address
     commands:
-      - cd eng-project-quiz-infra/kustomization/wip-cicd
-      
       - COMMIT=${DRONE_COMMIT_SHA:0:8}
       - RAW_BRANCH=${DRONE_BRANCH}
       - BRANCH=$(echo $RAW_BRANCH | sed 's/[^a-zA-Z0-9]/-/g')
       - TAG=$BRANCH-$COMMIT
       - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
-
-      - echo $FULL_IMAGE_NAME
-
+        
+      - cd eng-project-quiz-infra/kustomization/$BRANCH
       - kustomize edit set image quizapp-image-name=$FULL_IMAGE_NAME
     
   - name: push-infrastructure-changes
@@ -71,6 +161,24 @@ steps:
 trigger:
   branch:
     - wip-cicd
-  events:
+  event:
     - push
-    - rollback
+
+
+
+---
+kind: pipeline
+type: kubernetes
+name: wip-cicd-build-only
+
+steps:
+  - name: build
+    image: gcr.io/kaniko-project/executor:debug
+    commands:
+      - /kaniko/executor --no-push --context="." --dockerfile="/deploy/Dockerfile.QuizApp"
+
+trigger:
+  branch:
+    - wip-cicd
+  event:
+    - pull_request
