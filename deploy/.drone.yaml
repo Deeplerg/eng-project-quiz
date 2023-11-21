@@ -39,8 +39,9 @@ steps:
   
   - name: edit-kustomization
     image: registry.k8s.io/kustomize/kustomize:v5.0.0
-    REGISTRY:
-      from_secret: registry_address
+    environment:
+      REGISTRY:
+        from_secret: registry_address
     commands:
       - cd eng-project-quiz-infra/kustomization/wip-cicd
       
