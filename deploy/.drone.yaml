@@ -60,7 +60,7 @@ steps:
       - git config user.name "Drone"
       - git add .
       - git commit -am "Update image tags" --author="Drone <drone@deeplerg.dev>"
-      - git push --author="Drone <drone@deeplerg.dev>"
+      - git push
 
     
 
