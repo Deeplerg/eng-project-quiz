@@ -40,25 +40,8 @@ steps:
   
   - name: edit-kustomization
     image: registry.k8s.io/kustomize/kustomize:v5.0.0
-    environment:
-      CERT_MANAGER_ISSUER:
-        from_secret: kustomize_wip-cicd_cert_manager_issuer
-      INGRESS_CLASS_NAME:
-        from_secret: kustomize_wip-cicd_ingress_class_name
-      INGRESS_TLS_HOST:
-        from_secret: kustomize_wip-cicd_ingress_tls_host
-      INGRESS_TLS_SECRETNAME:
-        from_secret: kustomize_wip-cicd_ingress_tls_secretname
-      INGRESS_HOST:
-        from_secret: kustomize_wip-cicd_ingress_host
     commands:
       - cd eng-project-quiz-infra/kustomization/wip-cicd
-      
-      - printf '%b\n' CERT_MANAGER_ISSUER=$CERT_MANAGER_ISSUER > environment-variables.env
-      - printf '%b\n' INGRESS_CLASS_NAME=$INGRESS_CLASS_NAME >> environment-variables.env
-      - printf '%b\n' INGRESS_TLS_HOST=$INGRESS_TLS_HOST >> environment-variables.env
-      - printf '%b\n' INGRESS_TLS_SECRETNAME=$INGRESS_TLS_SECRETNAME >> environment-variables.env
-      - printf '%b\n' INGRESS_HOST=$INGRESS_HOST >> environment-variables.env   
       
       - COMMIT=${DRONE_COMMIT_SHA:0:8}
       - RAW_BRANCH=${DRONE_BRANCH}
@@ -67,7 +50,16 @@ steps:
       - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
 
       - kustomize edit set image quizapp-image-name=$FULL_IMAGE_NAME
-      - kustomize build .
+    
+  - name: push-infrastructure-changes
+    image: alpine/git
+    commands:
+      - git config --global user.email "drone@ci"
+      - git config --global user.name "drone"
+      - git add .
+      - git commit -m "Update image tags"
+      - git push
+
     
 
 trigger:
