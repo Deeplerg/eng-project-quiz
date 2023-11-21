@@ -50,6 +50,8 @@ steps:
       - TAG=$BRANCH-$COMMIT
       - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
 
+      - echo $FULL_IMAGE_NAME
+
       - kustomize edit set image quizapp-image-name=$FULL_IMAGE_NAME
     
   - name: push-infrastructure-changes
