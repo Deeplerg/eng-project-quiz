@@ -56,10 +56,10 @@ steps:
     commands:
       - cd eng-project-quiz-infra
       - git checkout main
-      - git config --global user.email "drone@ci"
-      - git config --global user.name "drone"
+      - git config --global user.email "drone@deeplerg.dev"
+      - git config --global user.name "Drone"
       - git add .
-      - git commit -am "Update image tags"
+      - git commit -am "Update image tags" --author="Drone drone@deeplerg.dev"
       - git push
 
     
