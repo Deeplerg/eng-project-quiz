@@ -54,10 +54,11 @@ steps:
   - name: push-infrastructure-changes
     image: alpine/git
     commands:
+      - git checkout main
       - git config --global user.email "drone@ci"
       - git config --global user.name "drone"
       - git add .
-      - git commit -m "Update image tags"
+      - git commit -am "Update image tags"
       - git push
 
     
