@@ -1,12 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using QuizApp.Infrastructure.Data.Models;
+using QuizApp.Core.Entities;
 
 namespace QuizApp.Application.Common;
 
 public interface IApplicationDbContext
 {
-    DbSet<QuestionDTO> Questions { get; }
-    DbSet<AnswerDTO> Answers { get; }
+    DbSet<Question> Questions { get; }
+    DbSet<Answer> Answers { get; }
+    DbSet<Quiz> Quizzes { get; }
+    DbSet<QuizResult> QuizResults { get; }
+    DbSet<QuizSubmission> QuizSubmissions { get; }
 
-    Task SaveChangesAsync();
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

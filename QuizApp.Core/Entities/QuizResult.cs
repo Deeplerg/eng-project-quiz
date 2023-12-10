@@ -2,9 +2,9 @@
 
 namespace QuizApp.Core.Entities;
 
-public class Question : BaseEntity<int>
+public class QuizResult : BaseEntity<int>
 {
     public string Description { get; set; } = string.Empty;
-    public IList<Answer> PossibleAnswers { get; set; } = new List<Answer>();
+    public int FromScore { get; set; }
     public Quiz Quiz { get; set; }
 }

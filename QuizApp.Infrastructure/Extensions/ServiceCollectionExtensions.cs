@@ -1,7 +1,9 @@
-﻿using Ardalis.GuardClauses;
+﻿using System.Reflection;
+using Ardalis.GuardClauses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using QuizApp.Application.Common;
 using QuizApp.Infrastructure.Data;
 
 namespace QuizApp.Infrastructure.Extensions;
@@ -18,6 +20,8 @@ public static class ServiceCollectionExtensions
         {
             options.UseNpgsql(connectionString);
         });
+
+        services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
         return services;
     }

@@ -4,19 +4,19 @@ using QuizApp.Core.Entities;
 
 namespace QuizApp.Infrastructure.Data.Configurations;
 
-public class AnswerConfiguration : IEntityTypeConfiguration<Answer>
+public class QuizResultConfiguration : IEntityTypeConfiguration<QuizResult>
 {
-    public void Configure(EntityTypeBuilder<Answer> builder)
+    public void Configure(EntityTypeBuilder<QuizResult> builder)
     {
         builder
             .HasKey(m => m.Id);
-
+        
         builder
             .Property(m => m.Description)
             .IsRequired();
 
         builder
-            .Property(m => m.Score)
+            .Property(m => m.FromScore)
             .IsRequired();
     }
 }
