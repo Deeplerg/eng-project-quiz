@@ -12,11 +12,12 @@ WORKDIR /src
 #RUN dotnet restore "QuizApp.Core/QuizApp.Core.csproj" --runtime linux-musl-x64
 
 COPY . .
+#RUN dotnet restore "QuizApp/QuizApp.csproj" --runtime linux-musl-x64
 RUN dotnet publish "QuizApp/QuizApp.csproj"  \
     -c Release  \
     -o /app/publish  \
     -p:UseAppHost=false \
-    --runtime linux-musl-x64 \
+    --runtime linux-musl-x64
 #    --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
