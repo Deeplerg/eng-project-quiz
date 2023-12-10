@@ -1,15 +1,15 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS publish
 WORKDIR /src
 
-COPY ["QuizApp/QuizApp.csproj", "QuizApp/"]
-COPY ["QuizApp.Infrastructure/QuizApp.Infrastructure.csproj", "QuizApp/"]
-COPY ["QuizApp.Application/QuizApp.Application.csproj", "QuizApp/"]
-COPY ["QuizApp.Core/QuizApp.Core.csproj", "QuizApp/"]
+#COPY ["QuizApp/QuizApp.csproj", "QuizApp/"]
+#COPY ["QuizApp.Infrastructure/QuizApp.Infrastructure.csproj", "QuizApp/"]
+#COPY ["QuizApp.Application/QuizApp.Application.csproj", "QuizApp/"]
+#COPY ["QuizApp.Core/QuizApp.Core.csproj", "QuizApp/"]
 
-RUN dotnet restore "QuizApp/QuizApp.csproj" --runtime linux-musl-x64
-RUN dotnet restore "QuizApp.Infrastructure/QuizApp.Infrastructure.csproj" --runtime linux-musl-x64
-RUN dotnet restore "QuizApp.Application/QuizApp.Application.csproj" --runtime linux-musl-x64
-RUN dotnet restore "QuizApp.Core/QuizApp.Core.csproj" --runtime linux-musl-x64
+#RUN dotnet restore "QuizApp/QuizApp.csproj" --runtime linux-musl-x64
+#RUN dotnet restore "QuizApp.Infrastructure/QuizApp.Infrastructure.csproj" --runtime linux-musl-x64
+#RUN dotnet restore "QuizApp.Application/QuizApp.Application.csproj" --runtime linux-musl-x64
+#RUN dotnet restore "QuizApp.Core/QuizApp.Core.csproj" --runtime linux-musl-x64
 
 COPY . .
 RUN dotnet publish "QuizApp/QuizApp.csproj"  \
@@ -17,7 +17,7 @@ RUN dotnet publish "QuizApp/QuizApp.csproj"  \
     -o /app/publish  \
     -p:UseAppHost=false \
     --runtime linux-musl-x64 \
-    --no-restore
+#    --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
