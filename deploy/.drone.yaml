@@ -215,8 +215,38 @@ steps:
 #
 #      - /kaniko/warmer --image=sdk:8.0-alpine --image=aspnet:8.0-alpine
     
+#  - name: build-push
+#    image: gcr.io/kaniko-project/executor:debug
+#    environment:
+#      USERNAME:
+#        from_secret: registry_username
+#      PASSWORD:
+#        from_secret: registry_password
+#      REGISTRY:
+#        from_secret: registry_address
+#      CA_CERT:
+#        from_secret: registry_ca_cert
+#    commands:
+#      - printf '%b\n' "$CA_CERT" > "/kaniko/ssl/certs/additional-ca-cert-bundle.crt"
+#      
+#      - COMMIT=${DRONE_COMMIT_SHA:0:8}
+#      - RAW_BRANCH=${DRONE_BRANCH}
+#      - BRANCH=$(echo $RAW_BRANCH | sed 's/[^a-zA-Z0-9]/-/g')
+#      - TAG=$BRANCH-$COMMIT
+#      - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
+#        
+#      - AUTH=$(echo -n $USERNAME:$PASSWORD | base64)
+#      
+#      - |
+#        JSON="{ \"auths\": { \"$REGISTRY\": { \"auth\": \"$AUTH\" } } }"
+#      - echo $JSON > "/kaniko/.docker/config.json"
+#
+#      #- /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
+#      - /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --cache="false"
+
   - name: build-push
-    image: gcr.io/kaniko-project/executor:debug
+    image: docker
+    privileged: true
     environment:
       USERNAME:
         from_secret: registry_username
@@ -227,22 +257,16 @@ steps:
       CA_CERT:
         from_secret: registry_ca_cert
     commands:
-      - printf '%b\n' "$CA_CERT" > "/kaniko/ssl/certs/additional-ca-cert-bundle.crt"
-      
+      - printf '%b\n' "$CA_CERT" > "/etc/ssl/certs/ca-certificates.crt"
+
       - COMMIT=${DRONE_COMMIT_SHA:0:8}
       - RAW_BRANCH=${DRONE_BRANCH}
       - BRANCH=$(echo $RAW_BRANCH | sed 's/[^a-zA-Z0-9]/-/g')
       - TAG=$BRANCH-$COMMIT
       - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
         
-      - AUTH=$(echo -n $USERNAME:$PASSWORD | base64)
-      
-      - |
-        JSON="{ \"auths\": { \"$REGISTRY\": { \"auth\": \"$AUTH\" } } }"
-      - echo $JSON > "/kaniko/.docker/config.json"
-
-      #- /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
-      - /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --cache="false"
+      - docker login -u $USERNAME -p $PASSWORD $REGISTRY
+      - docker build -f deploy/Dockerfile.QuizApp --push -t $FULL_IMAGE_NAME .
 
 
   - name: clone-infrastructure
