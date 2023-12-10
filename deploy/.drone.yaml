@@ -241,7 +241,7 @@ steps:
         JSON="{ \"auths\": { \"$REGISTRY\": { \"auth\": \"$AUTH\" } } }"
       - echo $JSON > "/kaniko/.docker/config.json"
 
-      - /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
+      - /kaniko/executor --cache=false --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
 
   - name: clone-infrastructure
     image: alpine/git
