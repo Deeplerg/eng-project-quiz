@@ -1,89 +1,93 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using QuizApp.Application.Quizzes.Commands.CreateQuiz;
-using QuizApp.Application.Quizzes.Commands.DeleteQuiz;
-using QuizApp.Application.Quizzes.Queries.GetAllQuizzes;
-using QuizApp.Application.Quizzes.Queries.GetQuiz;
+using QuizApp.Application.QuizResults.Commands.CreateQuiz;
+using QuizApp.Application.QuizResults.Commands.DeleteQuizResult;
+using QuizApp.Application.QuizResults.Queries.GetQuizResult;
+using QuizApp.Application.QuizResults.Queries.GetQuizResultsByQuiz;
 using QuizApp.Views;
 
 namespace QuizApp.Controllers;
 
-[Route("api/quizzes")]
+[Route("api/quiz-results")]
 [ApiController]
-public class QuizController : ControllerBase
+public class QuizResultController : ControllerBase
 {
     private readonly ISender _sender;
 
-    public QuizController(ISender sender)
+    public QuizResultController(ISender sender)
     {
         _sender = sender;
     }
-
-    // GET: api/<QuizController>
-    [HttpGet]
-    [Produces(typeof(IEnumerable<QuizDTO>))]
+        
+    // GET: api/by-quiz/<QuizResultController>
+    [HttpGet("by-quiz/{quizId}")]
+    [Produces(typeof(IEnumerable<QuizResultDTO>))]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> GetByQuiz(int quizId)
     {
-        var query = new GetAllQuizzesQuery();
+        var query = new GetQuizResultsByQuizQuery()
+        {
+            QuizId = quizId
+        };
             
         var result = await _sender.Send(query);
 
-        var dtos = new List<QuizDTO>();
+        var dtos = new List<QuizResultDTO>();
         foreach(var question in result)
         {
-            var dto = (QuizDTO)question;
+            var dto = (QuizResultDTO)question;
             dtos.Add(dto);
         }
         
         return Ok(dtos);
     }
-    
-    // GET api/<QuizController>/5
+
+    // GET api/<QuizResultController>/5
     [HttpGet("{id}")]
-    [Produces(typeof(QuizDTO))]
+    [Produces(typeof(QuizResultDTO))]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(int id)
     {
-        var query = new GetQuizQuery
+        var query = new GetQuizResultQuery
         {
             Id = id
         };
-
+            
         var result = await _sender.Send(query);
 
         if (result is null)
             return NotFound();
-        return Ok((QuizDTO)result);
+
+        return Ok((QuizResultDTO)result);
     }
 
-    // POST api/<QuizController>
+    // POST api/<QuizResultController>
     [HttpPost]
-    [Produces(typeof(QuizDTO))]
+    [Produces(typeof(QuizResultDTO))]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] CreateQuizCommand command)
+    public async Task<IActionResult> Post([FromBody] CreateQuizResultCommand command)
     {
         var result = await _sender.Send(command);
 
         int id = result.Id;
-
-        return CreatedAtAction(nameof(Get), new { id }, (QuizDTO)result);
+            
+        return CreatedAtAction(nameof(Get), new { id }, (QuizResultDTO)result);
     }
 
-    // // PUT api/<QuizController>/5
+    // // PUT api/<QuizResultController>/5
     // [HttpPut("{id}")]
     // public void Put(int id, [FromBody] string value)
     // {
     // }
 
-    // DELETE api/<QuizController>/5
+    // DELETE api/<QuizResultController>/5
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(int id)
     {
-        var command = new DeleteQuizCommand
+        var command = new DeleteQuizResultCommand
         {
             Id = id
         };

@@ -4,7 +4,7 @@ using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QuizApp.Application.Common.Exceptions;
+using QuizApp.Application.Exceptions;
 
 namespace QuizApp.Middleware;
 

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using ValidationException = QuizApp.Application.Common.Exceptions.ValidationException;
+using ValidationException = QuizApp.Application.Exceptions.ValidationException;
 
 namespace QuizApp.Application.Behaviors;
 

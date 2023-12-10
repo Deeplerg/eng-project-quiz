@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace QuizApp.Application.Common.Exceptions;
+namespace QuizApp.Application.Exceptions;
 
 public class ValidationException : Exception
 {
