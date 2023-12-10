@@ -101,27 +101,6 @@ type: kubernetes
 name: dev-build-push
 
 steps:
-  - name: warmer
-    image: gcr.io/kaniko-project/warmer:debug
-    environment:
-      USERNAME:
-        from_secret: registry_username
-      PASSWORD:
-        from_secret: registry_password
-      REGISTRY:
-        from_secret: registry_address
-      CA_CERT:
-        from_secret: registry_ca_cert
-    commands:
-      - printf '%b\n' "$CA_CERT" > "/kaniko/ssl/certs/additional-ca-cert-bundle.crt"
-
-      - AUTH=$(echo -n $USERNAME:$PASSWORD | base64)
-      - |
-        JSON="{ \"auths\": { \"$REGISTRY\": { \"auth\": \"$AUTH\" } } }"
-      - echo $JSON > "/kaniko/.docker/config.json"
-
-      - /kaniko/warmer --image=sdk:8.0-alpine --image=aspnet:8.0-alpine
-    
   - name: build-push
     image: gcr.io/kaniko-project/executor:debug
     environment:
@@ -215,6 +194,27 @@ type: kubernetes
 name: wip-cicd-build-push
 
 steps:
+  - name: warmer
+    image: gcr.io/kaniko-project/warmer:debug
+    environment:
+      USERNAME:
+        from_secret: registry_username
+      PASSWORD:
+        from_secret: registry_password
+      REGISTRY:
+        from_secret: registry_address
+      CA_CERT:
+        from_secret: registry_ca_cert
+    commands:
+      - printf '%b\n' "$CA_CERT" > "/kaniko/ssl/certs/additional-ca-cert-bundle.crt"
+
+      - AUTH=$(echo -n $USERNAME:$PASSWORD | base64)
+      - |
+        JSON="{ \"auths\": { \"$REGISTRY\": { \"auth\": \"$AUTH\" } } }"
+      - echo $JSON > "/kaniko/.docker/config.json"
+
+      - /kaniko/warmer --image=sdk:8.0-alpine --image=aspnet:8.0-alpine
+    
   - name: build-push
     image: gcr.io/kaniko-project/executor:debug
     environment:
