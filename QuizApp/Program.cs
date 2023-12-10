@@ -12,11 +12,13 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApiServices();
 
+builder.Configuration.AddApiSettings();
+
 var app = builder.Build();
 
 app.UseHealthChecks("/health");
 
-app.UseExceptionHandler(builder => { });
+app.UseExceptionHandler(_ => { });
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
