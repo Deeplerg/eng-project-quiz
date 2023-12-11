@@ -65,13 +65,9 @@ trigger:
   branch:
     - main
   event:
-    include:
-      - promote
-      - rollback
-#      - push # Hmmmmm... Do we really have to promote this?
-  target:
-    - production
-
+    - promote
+    - rollback
+    - push
 
 
 ---
