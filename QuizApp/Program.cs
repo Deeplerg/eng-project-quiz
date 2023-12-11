@@ -8,9 +8,11 @@ using QuizApp.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string corsPolicyName = "quizapp-cors-policy";
+
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddApiServices();
+builder.Services.AddApiServices(corsPolicyName);
 
 builder.Configuration.AddApiSettings();
 
@@ -19,6 +21,8 @@ var app = builder.Build();
 app.UseHealthChecks("/health");
 
 app.UseExceptionHandler(_ => { });
+
+app.UseCors(corsPolicyName);
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
