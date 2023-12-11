@@ -65,13 +65,9 @@ trigger:
   branch:
     - main
   event:
-    include:
-      - promote
-      - rollback
-#      - push # Hmmmmm... Do we really have to promote this?
-  target:
-    - production
-
+    - promote
+    - rollback
+    - push
 
 
 ---
@@ -207,20 +203,21 @@ steps:
         from_secret: registry_ca_cert
     commands:
       - printf '%b\n' "$CA_CERT" > "/kaniko/ssl/certs/additional-ca-cert-bundle.crt"
-      
+
       - COMMIT=${DRONE_COMMIT_SHA:0:8}
       - RAW_BRANCH=${DRONE_BRANCH}
       - BRANCH=$(echo $RAW_BRANCH | sed 's/[^a-zA-Z0-9]/-/g')
       - TAG=$BRANCH-$COMMIT
       - FULL_IMAGE_NAME=$REGISTRY/quizapp:$TAG
-        
+
       - AUTH=$(echo -n $USERNAME:$PASSWORD | base64)
-      
+
       - |
         JSON="{ \"auths\": { \"$REGISTRY\": { \"auth\": \"$AUTH\" } } }"
       - echo $JSON > "/kaniko/.docker/config.json"
 
       - /kaniko/executor --destination="$FULL_IMAGE_NAME" --context="." --dockerfile="/deploy/Dockerfile.QuizApp" --cache="true" --cache-repo="$REGISTRY/quizapp/cache" --cache-copy-layers="true" --cache-run-layers="true"
+
 
   - name: clone-infrastructure
     image: alpine/git
